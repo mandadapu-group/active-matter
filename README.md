@@ -1,4 +1,4 @@
-# active-matter
+# Molecular Simulations of Active Matter
 ![Chiral Active Dumbbells](images/chiral_active_dumbbells.png)
 
 Simulation and analysis code for active matter research.
