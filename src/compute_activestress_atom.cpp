@@ -47,7 +47,7 @@ ComputeActivestressAtom::ComputeActivestressAtom(LAMMPS *lmp, int narg, char **a
   id_temp(NULL), stress(NULL)
 {
   if (narg < 4) error->all(FLERR,"Illegal compute activestress/atom command");
-  f_active = force->numeric(FLERR,arg[3]);
+  f_active = utils::numeric(FLERR,arg[3],false,lmp);
 
   peratom_flag = 1;
   size_peratom_cols = 4;

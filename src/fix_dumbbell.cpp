@@ -29,7 +29,7 @@
 using namespace LAMMPS_NS;
 using namespace FixConst;
 
-enum{CCW,CW,MIXED,CONVECT,COM};
+enum{CCW,CW,MIXED,CONVECT,COM,PLOW};
 
 /* ---------------------------------------------------------------------- */
 
@@ -40,7 +40,7 @@ FixDumbbell::FixDumbbell(LAMMPS *lmp, int narg, char **arg) :
 {
   if (strcmp(style,"dumbbell") != 0 && narg < 4)
     error->all(FLERR,"Illegal fix dumbbell command: not enough args");
-  f_active = force->numeric(FLERR,arg[3]);
+  f_active = utils::numeric(FLERR,arg[3],false,lmp);
   activestyle = CCW;
   if (narg == 5){
     if (strcmp(arg[4],"ccw") == 0)
@@ -53,8 +53,10 @@ FixDumbbell::FixDumbbell(LAMMPS *lmp, int narg, char **arg) :
       activestyle = CONVECT;
     else if (strcmp(arg[4],"com") == 0)
       activestyle = COM;
+    else if (strcmp(arg[4],"plow") == 0)
+      activestyle = PLOW;
     else
-      error->all(FLERR, "Only {ccw, cw, mixed, convect, com} are accepted styles.");
+      error->all(FLERR, "Only {ccw, cw, mixed, convect, com, plow} are accepted styles.");
   }
   if (force->newton_bond)
     error->all(FLERR, "To use fix dumbbell, you must turn off newton bonds "
@@ -166,6 +168,13 @@ void FixDumbbell::post_force(int /*vflag*/)
         f2y = f_active * (dely);
       }
 
+      else if (activestyle==PLOW){
+        // Apply convective force perpendicular to bond axis
+        f1x = f_active * (-dely);
+        f1y = f_active * (delx);
+        f2x = f_active * (-dely);
+        f2y = f_active * (delx);
+      }
       // Finally, add the computed forces to atoms owned by this processor:
       if (i1 < nlocal){   // Add force only to real atoms (not ghosts)
         f[i1][0] += f1x;  // unit vector rotated CW

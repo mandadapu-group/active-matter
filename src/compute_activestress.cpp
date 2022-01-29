@@ -43,7 +43,7 @@ ComputeActiveStress::ComputeActiveStress(LAMMPS *lmp, int narg, char **arg) :
 {
   if (narg < 4)
     error->all(FLERR,"Illegal compute activestress command");
-  f_active = force->numeric(FLERR,arg[3]);
+  f_active = utils::numeric(FLERR,arg[3],false,lmp);
   int dimension = domain->dimension;
   if (dimension != 2) error->all(FLERR,"Only 2D stress tensor is supported.");
 
